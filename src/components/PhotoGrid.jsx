@@ -19,7 +19,27 @@ const PhotoGrid = () => {
     getPhotos();
   }, []);
 
-  return <div>PhotoGrid</div>;
+  return (
+    <div className="grid grid-cols-3 gap-4 m-10">
+      {photos.length > 0 ? (
+        photos.map((photo) => {
+          return (
+            <div
+              key={photo.id}
+              className="overflow-hidden rounded-lg shadow-md max-w-96 max-h-96"
+            >
+              <img
+                src={photo.urls.small}
+                className="max-w-96 max-h-96 object-cover"
+              />
+            </div>
+          );
+        })
+      ) : (
+        <div>Loading...</div>
+      )}
+    </div>
+  );
 };
 
 export default PhotoGrid;
