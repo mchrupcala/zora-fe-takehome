@@ -1,13 +1,14 @@
+import { useState } from "react";
 import SearchBar from "../components/SearchBar";
-import Photo from "../components/Photo";
 import PhotoGrid from "../components/PhotoGrid";
 
 const Homepage = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
   return (
     <div>
-      <SearchBar />
-      <Photo />
-      <PhotoGrid />
+      <SearchBar setSearchTerm={setSearchTerm} />
+      <PhotoGrid searchTerm={searchTerm} />
     </div>
   );
 };

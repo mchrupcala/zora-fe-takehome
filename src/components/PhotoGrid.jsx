@@ -1,35 +1,51 @@
 import { useEffect, useState } from "react";
 import { fetchPhotos } from "../api/photos.js";
 import InfiniteScroll from "react-infinite-scroll-component";
+import Photo from "./Photo.jsx";
 
-const PhotoGrid = () => {
+const PhotoGrid = ({ searchTerm }) => {
   const [photos, setPhotos] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const getPhotos = async () => {
+    if (!searchTerm || searchTerm.length === 0) {
+      setPhotos([]);
+      return;
+    }
+
+    const fetchInitialPhotos = async () => {
+      setIsLoading(true);
       try {
-        await fetchPhotos().then((res) => {
-          console.log("here you go: ", res);
-          setPhotos(res);
-        });
+        const res = await fetchPhotos(1, 10, searchTerm);
+        setPhotos(res.results);
+        setPage(2);
       } catch (err) {
-        console.log("Error in getPhotos: ", err);
+        console.error("Error in fetchInitialPhotos:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    getPhotos();
-  }, []);
+    fetchInitialPhotos();
+  }, [searchTerm]);
 
   const getMorePhotos = async () => {
+    if (isLoading) return;
+    if (!searchTerm || searchTerm.length === 0) {
+      setPhotos([]);
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      await fetchPhotos(page).then((res) => {
-        setPhotos((prev) => [...prev, ...res]);
-      });
-      setPage(page + 1);
+      const res = await fetchPhotos(page, 10, searchTerm);
+      setPhotos((prev) => [...prev, ...res.results]);
+      setPage((prevPage) => prevPage + 1);
     } catch (err) {
-      console.log("Error in getMorePhotos: ", err);
+      console.error("Error in getMorePhotos:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -43,17 +59,7 @@ const PhotoGrid = () => {
       <div className="grid grid-cols-3 gap-4 m-10">
         {photos.length > 0 ? (
           photos.map((photo) => {
-            return (
-              <div
-                key={photo.id}
-                className="overflow-hidden rounded-lg shadow-md max-w-96 max-h-96"
-              >
-                <img
-                  src={photo.urls.small}
-                  className="max-w-96 max-h-96 object-cover"
-                />
-              </div>
-            );
+            return <Photo photo={photo} />;
           })
         ) : (
           <div>Loading...</div>

@@ -5,7 +5,7 @@ export const fetchPhotos = async (
 ) => {
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_UNSPLASH_API_URL}photos?page=${page}&limit=${limit}`,
+      `${process.env.REACT_APP_UNSPLASH_API_URL}search/photos?query=${search}&page=${page}&limit=${limit}`,
       {
         headers: {
           Authorization: `Client-ID ${process.env.REACT_APP_UNSPLASH_ACCESS_KEY}`,
